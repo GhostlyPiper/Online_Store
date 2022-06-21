@@ -1,43 +1,51 @@
 {% extends 'flatpages/default.html' %}
+<!-- Подключаем новый файл с нашим фильтром -->
+{% load custom_filters %}
+<!-- Подключаем новый файл с нашим тегом -->
+{% load custom_tags %}
 
 {% block title %}
 Products
 {% endblock title %}
 
 {% block content %}
-   <h1>Все товары</h1>
-   <!-- Используем переданную из представления переменную time_now
-   и применяем к ней фильтр date. По назначению этот фильтр очень похож
-   на метод strftime у объекта datetime в Python — вывод времени
-   в указанном формате. -->
-   <h3>{{ time_now|date:'M d Y' }}</h3>
-   <!-- Если в переменной next_sale будет None,
-   то выведется указанный в фильтре текст -->
-   <h3> {{ next_sale|default_if_none:"Чуть позже сообщим о распродаже!" }} </h3>
+    <h1>Все товары</h1>
+    <!-- Используем переданную из представления переменную time_now
+    и применяем к ней фильтр date. По назначению этот фильтр очень похож
+    на метод strftime у объекта datetime в Python — вывод времени
+    в указанном формате. -->
+    <!-- Вот так выглядело использование переменной и фильтра -->
+     <h3>{{ time_now|date:'M d Y l' }}</h3>
+    <!-- А вот так мы используем наш тег-->
+    <!-- <h3>{% current_time '%b %d %Y %A' %}</h3>-->
+    <!-- Если в переменной next_sale будет None,
+    то выведется указанный в фильтре текст -->
+    <h3> {{ next_sale|default_if_none:"Чуть позже сообщим о распродаже!" }} </h3>
 
-   <hr>
-   {% if products %}
-       <table>
-           <tr>
-               <td>Название</td>
-               <td>Описание</td>
-               <td>Категория</td>
-               <td>Цена</td>
-               <td>Количество</td>
-           </tr>
+    <hr>
+    {% if products %}
+        <table>
+            <tr>
+               <td><b>Название</b></td>
+               <td><b>Описание</b></td>
+               <td><b>Категория</b></td>
+               <td><b>Цена</b></td>
+               <td><b>Количество</b></td>
+            </tr>
 
-           {% for product in products %}
-           <tr>
+            {% for product in products %}
+            <tr>
                <td>{{ product.name }}</td>
                <td>{{ product.description|truncatewords:2 }}</td>
                <td>{{ product.category.name }}</td>
-               <td>{{ product.price }}</td>
+               <!-- Используем наш фильтр -->
+               <td>{{ product.price|currency:"eur" }}</td>
                <td>{{ product.quantity }}</td>
-           </tr>
-           {% endfor %}
+            </tr>
+            {% endfor %}
 
-       </table>
-   {% else %}
+        </table>
+    {% else %}
        <h2>Товаров нет!</h2>
-   {% endif %}
+    {% endif %}
 {% endblock content %}
